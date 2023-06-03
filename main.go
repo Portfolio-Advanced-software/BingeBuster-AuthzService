@@ -2,36 +2,22 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
-	pb "your_package_path/authorization" // Update with the correct package path
-
 	"github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/config"
+	"github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/handlers"
+	mongodb "github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/mongodb"
+	pb "github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/proto"
+	"github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/utils"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 )
 
-type server struct{}
-
-func (s *server) VerifyRole(ctx context.Context, req *pb.VerifyRoleRequest) (*pb.VerifyRoleResponse, error) {
-	// Add your JWT token verification logic here
-	token := req.Token
-	hasRole := false
-
-	// Perform the necessary checks to validate the user's role
-	if tokenIsValid(token) {
-		// Assume roles are stored in the token's claims
-		claims := extractClaims(token)
-		role := claims["role"].(string)
-
-		// Check if the role is one of the allowed roles
-		if role == "user" || role == "subtitle validator" || role == "movie maintainer" {
-			hasRole = true
-		}
-	}
-
-	return &pb.VerifyRoleResponse{HasRole: hasRole}, nil
-}
+var db *mongo.Client
+var authdb *mongo.Collection
+var mongoCtx context.Context
 
 func main() {
 	c, err := config.LoadConfig()
@@ -40,27 +26,40 @@ func main() {
 		log.Fatalln("Failed at config", err)
 	}
 
+	jwt := utils.JwtWrapper{
+		SecretKey:       c.JWTSecretKey,
+		Issuer:          "go-grpc-auth-svc",
+		ExpirationHours: 24 * 365,
+	}
+
 	lis, err := net.Listen("tcp", c.Port)
+
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		log.Fatalln("Failed to listen:", err)
 	}
-	s := grpc.NewServer()
-	pb.RegisterAuthServiceServer(s, &server{})
-	log.Println("gRPC server running on port", c.Port)
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
+
+	fmt.Println("Auth Svc on", c.Port)
+
+	// Construct the MongoDB URL
+	mongodbURL := fmt.Sprintf("mongodb+srv://%s:%s@%s", c.MongoDBUser, c.MongoDBPwd, c.MongoDBCluster)
+
+	// Initialize MongoDB client
+	fmt.Println("Connecting to MongoDB...")
+	db = mongodb.ConnectToMongoDB(mongodbURL)
+
+	// Bind our collection to our global variable for use in other methods
+	authdb = db.Database(c.MongoDBDb).Collection(c.MongoDBCollection)
+
+	s := handlers.Server{
+		DB:  authdb,
+		Jwt: jwt,
 	}
-}
 
-// Placeholder functions for JWT token verification and claims extraction
-func tokenIsValid(token string) bool {
-	// Implement your JWT token verification logic here
-	// Return true if the token is valid, false otherwise
-	return true
-}
+	grpcServer := grpc.NewServer()
 
-func extractClaims(token string) map[string]interface{} {
-	// Implement your JWT claims extraction logic here
-	// Return a map of claims extracted from the token
-	return map[string]interface{}{}
+	pb.RegisterAuthServiceServer(grpcServer, &s)
+
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalln("Failed to serve:", err)
+	}
 }

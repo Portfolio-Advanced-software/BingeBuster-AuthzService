@@ -11,6 +11,7 @@ type Config struct {
 	MongoDBCollection string `mapstructure:"MONGODB_COLLECTION"`
 	RabbitMQUser      string `mapstructure:"RABBITMQ_USER"`
 	RabbitMQPwd       string `mapstructure:"RABBITMQ_PWD"`
+	JWTSecretKey      string `mapstructure:"JWT_SECRET_KEY"`
 }
 
 func LoadConfig() (config Config, err error) {
