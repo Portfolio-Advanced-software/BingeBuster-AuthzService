@@ -2,7 +2,10 @@ module github.com/Portfolio-Advanced-software/BingeBuster-AuthzService
 
 go 1.20
 
-require github.com/spf13/viper v1.16.0
+require (
+	github.com/spf13/viper v1.16.0
+	google.golang.org/protobuf v1.30.0
+)
 
 require (
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -18,7 +21,6 @@ require (
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
-	google.golang.org/protobuf v1.30.0 // indirect
 )
 
 require (

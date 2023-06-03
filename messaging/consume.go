@@ -6,7 +6,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func ConsumeMessage(conn *amqp.Connection, queueName string, callback func([]byte)) {
+func ConsumeMessage(conn *amqp.Connection, queueName string, callback func([]byte) error) {
 	ch, err := conn.Channel()
 	FailOnError(err, "Failed to open a channel")
 	defer ch.Close()

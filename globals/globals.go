@@ -8,7 +8,7 @@ import (
 
 var (
 	Db             *mongo.Client
-	HistoryDb      *mongo.Collection
+	AuthzDb        *mongo.Collection
 	MongoCtx       context.Context
 	MongoDBUrl     string
 	DbName         string
