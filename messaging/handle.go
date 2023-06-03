@@ -1,11 +1,13 @@
 package messaging
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 
 	"github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/globals"
+	"github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/mongodb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -26,6 +28,11 @@ func HandleMessage(body []byte) error {
 	}
 
 	switch msg.Action {
+	case "deleteAllRecords":
+		_, err := mongodb.DeleteAuthzByUserId(context.Background(), msg.UserId)
+		if err != nil {
+			log.Println("Failed to delete all records:", err)
+		}
 	case "saveRecord":
 		// Insert the data into the database, result contains the newly generated Object ID for the new document
 		_, err := globals.AuthzDb.InsertOne(globals.MongoCtx, msg)
