@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package authz;
 
-option go_package = "github.com/Portfolio-Advanced-software/BingeBuster-AuthzServuce/authzpb";
+option go_package = "github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/authzpb";
 
 service AuthService {
     rpc VerifyRole(VerifyRoleRequest) returns (VerifyRoleResponse);
