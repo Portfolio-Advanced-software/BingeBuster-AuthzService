@@ -9,7 +9,7 @@ import (
 	"github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/config"
 	"github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/handlers"
 	mongodb "github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/mongodb"
-	pb "github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/proto"
+	authzpb "github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/proto"
 	"github.com/Portfolio-Advanced-software/BingeBuster-AuthzService/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
@@ -57,7 +57,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	pb.RegisterAuthServiceServer(grpcServer, &s)
+	authzpb.RegisterAuthServiceServer(grpcServer, &s)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalln("Failed to serve:", err)

@@ -4,7 +4,7 @@ package authz;
 
 option go_package = "github.com/Portfolio-Advanced-software/BingeBuster-AuthzServuce/authzpb";
 
-service AuthService {
+service AuthzService {
     rpc VerifyRole(VerifyRoleRequest) returns (VerifyRoleResponse);
 }
 
