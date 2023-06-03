@@ -9,7 +9,8 @@ service AuthzService {
 }
 
 message VerifyRoleRequest {
-    string jwt_token = 1;
+    string user_id = 1;
+    string role = 2;
 }
 
 message VerifyRoleResponse {

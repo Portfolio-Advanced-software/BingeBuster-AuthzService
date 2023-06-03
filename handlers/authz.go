@@ -14,13 +14,13 @@ import (
 )
 
 type Server struct {
-	authzpb.UnimplementedAuthServiceServer
+	authzpb.UnimplementedAuthzServiceServer
 	DB        *mongo.Collection
 	jwtSecret string
 	Jwt       utils.JwtWrapper
 }
 
-func (s *Server) Authorize(ctx context.Context, req *authzpb.VerifyRoleRequest) (*authzpb.VerifyRoleResponse, error) {
+func (s *Server) VerifyRole(ctx context.Context, req *authzpb.VerifyRoleRequest) (*authzpb.VerifyRoleResponse, error) {
 	claims, err := s.Jwt.ValidateToken(req.JwtToken)
 
 	if err != nil {
@@ -40,7 +40,7 @@ func (s *Server) Authorize(ctx context.Context, req *authzpb.VerifyRoleRequest) 
 	}
 
 	// Check if the user has the required role
-	if user.Role != claims.Role {
+	if user.Role != req.Role {
 		return &authzpb.VerifyRoleResponse{IsAuthorized: false}, nil
 	}
 

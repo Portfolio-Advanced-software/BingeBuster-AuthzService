@@ -57,7 +57,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	authzpb.RegisterAuthServiceServer(grpcServer, &s)
+	authzpb.RegisterAuthzServiceServer(grpcServer, &s)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalln("Failed to serve:", err)
