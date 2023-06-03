@@ -11,7 +11,7 @@ COPY . /go/src/app
 RUN go get -d -v ./...
 
 # Build the Go app
-RUN go build -o app ./cmd
+RUN go build -o app
 
 # Create a non-root user and switch to that user
 RUN adduser -D authz-service
