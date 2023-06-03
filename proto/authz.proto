@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package authz;
+
+option go_package = "./pkg/pb";
+
+service AuthService {
+    rpc VerifyRole(VerifyRoleRequest) returns (VerifyRoleResponse);
+}
+
+message VerifyRoleRequest {
+    string jwt_token = 1;
+}
+
+message VerifyRoleResponse {
+    bool is_authorized = 1;
+}
